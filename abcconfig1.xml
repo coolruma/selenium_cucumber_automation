@@ -1,0 +1,228 @@
+<EnvironmentInfo>
+	<DAShellHost>
+		<HostName>ddltse201</HostName>
+		<Username>dltuser</Username>
+		<Password></Password>
+	</DAShellHost>
+	<HeartBeatCheck>
+		<Management>
+			<Governess>
+				<!--This is the adapter name known by the Governess. -->
+				<Monitor>
+					<EMSProperties ConnectionFactory="DLTTCF_DEV"
+						ServerUrl="qesb201:4222" Username="admin" Password=""
+						TopicName="asx.se210.technology.dlt.heartbeat.pub" ReadTimeOut="12000" />
+					<HBMonitorIntervalMs>12000</HBMonitorIntervalMs>
+				</Monitor>
+			</Governess>
+		</Management>
+	</HeartBeatCheck>
+	<InboundAdapters>
+		<Adapter>
+			<Name>ASXML</Name>
+			<Service>
+				<Name>asxml_adapter</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>asxmladapter.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/asxml</AdapterHomeDir>
+			</Service>
+			<InputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.asxml.sub" />
+			</InputQueue>
+			<Error>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.asxml.poison" />
+			</Error>
+			<!-- QueueName will need to be revisited once logging queues are in place -->
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.asxml.log" />
+			</LoggingQueue>
+		</Adapter>
+		<Adapter>
+			<Name>FIX</Name>
+			<Service>
+				<Name>cdm_dah_trade</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>cdm_dah_tradeadapter.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/cdm_dah_trade</AdapterHomeDir>
+			</Service>
+			<InputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.trade.sub" />
+			</InputQueue>
+			<Error>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.trade.poison" />
+			</Error>
+			<!-- QueueName will need to be revisited once logging queues are in place -->
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.trade.log" />
+			</LoggingQueue>
+		</Adapter>
+		<Adapter>
+			<Name>ISO</Name>
+			<Service>
+				<Name>cdm_dah_iso</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>cdm_dah_isoadapter.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/cdm_dah_iso</AdapterHomeDir>
+			</Service>
+			<InputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.iso20022.sub" />
+			</InputQueue>
+			<Error>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.iso20022.poison" />
+			</Error>
+			<!-- QueueName will need to be revisited once logging queues are in place -->
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.iso20022.log" />
+			</LoggingQueue>
+		</Adapter>
+		<Adapter>
+			<Name>CDM</Name>
+			<Service>
+				<Name>cdm_dah_refdata</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>cdm_dah_refdata.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/cdm_dah_refdata</AdapterHomeDir>
+			</Service>
+			<InputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.cdm.sub" />
+			</InputQueue>
+			<Error>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.cdm.poison" />
+			</Error>
+			<!-- QueueName will need to be revisited once logging queues are in place -->
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.cdm.log" />
+			</LoggingQueue>
+		</Adapter>
+	</InboundAdapters>
+	<OutboundAdapters>
+		<Adapter>
+			<Name>ASXML_OUT</Name>
+			<Service>
+				<Name>dah_asxml_out</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>asxmladapter.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/asxml</AdapterHomeDir>
+			</Service>
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.asxml.log" />
+			</LoggingQueue>
+			<OutputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.asxml.test.sub" />
+			</OutputQueue>
+		</Adapter>
+		<Adapter>
+			<Name>ISO_OUT</Name>
+			<Service>
+				<Name>dah_cdm_isoout</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>dah_cdm_isoadapter.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/dah_cdm_isoout</AdapterHomeDir>
+			</Service>
+			<!-- QueueName will need to be revisited once logging queues are in place -->
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.iso20022.log" />
+			</LoggingQueue>
+			<OutputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.iso20022.test.sub" />
+			</OutputQueue>
+		</Adapter>
+		<Adapter>
+			<Name>FIX_AR</Name>
+			<Service>
+				<Name>dah_cdm_tradeack</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>dah_cdm_tradeackadapter.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/dah_cdm_tradeack</AdapterHomeDir>
+			</Service>
+			<!-- QueueName will need to be revisited once logging queues are in place -->
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.trade.log" />
+			</LoggingQueue>
+			<OutputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+					ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+					QueueName="asx.se210.posttrade.eq.dlt.tradeack.test.sub" />
+			</OutputQueue>
+		</Adapter>
+		<Adapter>
+			<Name>CDM_OUT</Name>
+			<Service>
+				<Name>dah_cdm_out</Name>
+				<HostName>ddltse221</HostName>
+				<Username>dltuser</Username>
+				<Password>dltuser</Password>
+				<LogFile>dah_cdm_refdata.log</LogFile>
+				<AdapterHomeDir>/d1/usr/dltuser/cdm</AdapterHomeDir>
+			</Service>
+			<LoggingQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.cdm.log" />
+			</LoggingQueue>
+			<OutputQueue>
+				<EMSProperties ConnectionFactory="DLTQCF_DEV"
+							   ServerUrl="qesb201:4222" Username="test_user_dlt" Password="test_user_dlt"
+							   QueueName="asx.se210.posttrade.eq.dlt.cdm.test.sub" />
+			</OutputQueue>
+		</Adapter>
+	</OutboundAdapters>
+	<TestConfigParameters>
+		<TestConfigParam Name="DALedgerUpdateWaitTime" Value="8000"></TestConfigParam>
+		<TestConfigParam Name="ShortWait" Value="1000"></TestConfigParam>
+	</TestConfigParameters>
+	<IAConfigParameters>
+		<!-- DA IA connection properties -->
+		<IAConfigParam Key="da.integration.party_id" Value="00001"/>
+		<IAConfigParam Key="da.integration.platform_url" Value="http://ddltse210:5050/participant_node_1/v0"/>
+		<IAConfigParam Key="da.integration.inbound.deduplication.ensure_on_startup" Value="false"/>
+	</IAConfigParameters>
+</EnvironmentInfo>

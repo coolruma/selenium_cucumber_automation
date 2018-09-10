@@ -1,0 +1,84 @@
+#Epic: SPD-161
+#Story: SPD-164
+@regression @nightly @SPD-161 @SPD-164
+Feature: E_SPD-161 S_SPD-164 Account creation and notification
+
+  @SPD-161_SPD-164_Precondition
+  Scenario: PreCondition - Create required Entities, Actors & Roles
+    Given the following "Feature" level precondition "inte904" are generated and published via adapter "ASXML"
+      | PreconditionKey | EntityName                          | LEI                             | BAH_BizMsgIdr                       | MessageId                           | CreationDateTime                     | PartyIdValidFrom | OpeningDate | PartyNameValidFrom | PartyType |
+      | Entity1         | CBA MARKETS LTD-${EXEC_UID}         | #{ADD_NODE}549300FBHFW3O5LH5M59 | ${BizMsgIdr::format=00002\|Entity1} | ${MessageId::format=00002\|Entity1} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ${T}        | ${T}               | ENTY      |
+      | Entity2         | COMMONWEALTH SECURITIES-${EXEC_UID} | #{ADD_NODE}549300FBHFW3O5LH5M69 | ${BizMsgIdr::format=00002\|Entity2} | ${MessageId::format=00002\|Entity2} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ${T}        | ${T}               | ENTY      |
+    And read the number of outgoing messages "2" on queue "ASXML_OUT" for message type "inte905" and store in scenario context
+    And the following precondition table are persisted to "Feature" properties file
+      | PreconditionKey | EntityId                        |
+      | Entity1         | ${EntityId::key=00002\|Entity1} |
+      | Entity2         | ${EntityId::key=00002\|Entity2} |
+    And the following "Feature" level precondition "inte904" are generated and published via adapter "ASXML"
+      | PreconditionKey | BAH_BizMsgIdr                               | MessageId                                   | CreationDateTime                     | PartyIdValidFrom | PartyType | ActorId                    | OpeningDate | MessagePartyId_BIC                             | MessagePartyId_UIC            | PartyNameValidFrom | MessagePartyIdType | EntityId                                | Designation                   |
+      | Actor_CDRA      | ${BizMsgIdr::format=00002\|Actor_CDRA}      | ${MessageId::format=00002\|Actor_CDRA}      | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ACTR      | ${ActorId::format=ActorId} | ${T}        | #{ADD_NODE}${MessagePartyId_BIC::format=BIC8}  | #{REMOVE_NODE}                | ${T}               | BIC8               | #{ADD_NODE}${#FEATURE#Entity1.EntityId} | #{ADD_NODE}LOAN A/C           |
+      | Actor_CSPA      | ${BizMsgIdr::format=00002\|Actor_CSPA}      | ${MessageId::format=00002\|Actor_CSPA}      | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ACTR      | ${ActorId::format=ActorId} | ${T}        | #{ADD_NODE}${MessagePartyId_BIC::format=BIC8}  | #{REMOVE_NODE}                | ${T}               | BIC8               | #{ADD_NODE}${#FEATURE#Entity2.EntityId} | #{ADD_NODE}MARGIN  A/C        |
+      | Actor_CETA      | ${BizMsgIdr::format=00002\|Actor_CETA}      | ${MessageId::format=00002\|Actor_CETA}      | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ACTR      | ${ActorId::format=ActorId} | ${T}        | #{ADD_NODE}${MessagePartyId_BIC::format=BIC11} | #{REMOVE_NODE}                | ${T}               | BIC11              | #{ADD_NODE}${#FEATURE#Entity2.EntityId} | #{ADD_NODE}MARGIN LENDING A/C |
+      | Actor_ACCR      | ${BizMsgIdr::format=00002\|Actor_ACCR}      | ${MessageId::format=00002\|Actor_ACCR}      | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ACTR      | ${ActorId::format=ActorId} | ${T}        | #{ADD_NODE}${MessagePartyId_BIC::format=BIC11} | #{REMOVE_NODE}                | ${T}               | BIC11              | #{ADD_NODE}${#FEATURE#Entity1.EntityId} | #{ADD_NODE}MARGIN LENDING A/C |
+      | Actor_CDRA_CSPA | ${BizMsgIdr::format=00002\|Actor_CDRA_CSPA} | ${MessageId::format=00002\|Actor_CDRA_CSPA} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ACTR      | ${ActorId::format=ActorId} | ${T}        |                                                | ${MessagePartyId::format=UIC} | ${T}               | UIC                | #{ADD_NODE}${#FEATURE#Entity2.EntityId} | #{ADD_NODE}MARGIN LENDING A/C |
+      | Actor_CDRA_CETA | ${BizMsgIdr::format=00002\|Actor_CDRA_CETA} | ${MessageId::format=00002\|Actor_CDRA_CETA} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ACTR      | ${ActorId::format=ActorId} | ${T}        |                                                | ${MessagePartyId::format=UIC} | ${T}               | UIC                | #{ADD_NODE}${#FEATURE#Entity1.EntityId} | #{ADD_NODE}MARGIN LENDING A/C |
+      | Actor_CSPA_CETA | ${BizMsgIdr::format=00002\|Actor_CSPA_CETA} | ${MessageId::format=00002\|Actor_CSPA_CETA} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ACTR      | ${ActorId::format=ActorId} | ${T}        | #{ADD_NODE}${MessagePartyId_BIC::format=BIC11} | #{REMOVE_NODE}                | ${T}               | BIC11              | #{ADD_NODE}${#FEATURE#Entity2.EntityId} | #{ADD_NODE}MARGIN LENDING A/C |
+    And Verify the number of outgoing messages on outbound adapter "ASXML_OUT" recieved are "7"
+    And the following "Feature" level precondition "inte904" are generated and published via adapter "ASXML"
+      | PreconditionKey | BAH_BizMsgIdr                              | MessageId                                  | CreationDateTime                     | PartyIdValidFrom | PartyType | ActorId                             | OpeningDate | RoleType        | PartyNameValidFrom | PermissionType1 | PermissionType2 | PermissionType3 |
+      | ACCR_CDRA       | ${BizMsgIdr::format=00002\|ACCR_CDRA}      | ${MessageId::format=00002\|ACCR_CDRA}      | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ROLE      | ${#FEATURE#Actor_CDRA.ActorId}      | ${T}        | #{ADD_NODE}ACCR | ${T}               | #{ADD_NODE}CDRA | #{NO_ACTION}    | #{NO_ACTION}    |
+      | ACCR_CSPA       | ${BizMsgIdr::format=00002\|ACCR_CSPA}      | ${MessageId::format=00002\|ACCR_CSPA}      | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ROLE      | ${#FEATURE#Actor_CSPA.ActorId}      | ${T}        | #{ADD_NODE}ACCR | ${T}               | #{ADD_NODE}CSPA | #{NO_ACTION}    | #{NO_ACTION}    |
+      | ACCR_CETA       | ${BizMsgIdr::format=00002\|ACCR_CETA}      | ${MessageId::format=00002\|ACCR_CETA}      | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ROLE      | ${#FEATURE#Actor_CETA.ActorId}      | ${T}        | #{ADD_NODE}ACCR | ${T}               | #{ADD_NODE}CETA | #{NO_ACTION}    | #{NO_ACTION}    |
+      | ACCR_ALL        | ${BizMsgIdr::format=00002\|ACCR_ALL}       | ${MessageId::format=00002\|ACCR_ALL}       | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ROLE      | ${#FEATURE#Actor_ACCR.ActorId}      | ${T}        | #{ADD_NODE}ACCR | ${T}               | #{ADD_NODE}CDRA | #{ADD_NODE}CSPA | #{ADD_NODE}CETA |
+      | ACCR_CDRA_CSPA  | ${BizMsgIdr::format=00002\|ACCR_CDRA_CSPA} | ${MessageId::format=00002\|ACCR_CDRA_CSPA} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ROLE      | ${#FEATURE#Actor_CDRA_CSPA.ActorId} | ${T}        | #{ADD_NODE}ACCR | ${T}               | #{ADD_NODE}CDRA | #{ADD_NODE}CSPA | #{NO_ACTION}    |
+      | ACCR_CDRA_CETA  | ${BizMsgIdr::format=00002\|ACCR_CDRA_CETA} | ${MessageId::format=00002\|ACCR_CDRA_CETA} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ROLE      | ${#FEATURE#Actor_CDRA_CETA.ActorId} | ${T}        | #{ADD_NODE}ACCR | ${T}               | #{ADD_NODE}CDRA | #{ADD_NODE}CETA | #{NO_ACTION}    |
+      | ACCR_CSPA_CETA  | ${BizMsgIdr::format=00002\|ACCR_CSPA_CETA} | ${MessageId::format=00002\|ACCR_CSPA_CETA} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}             | ROLE      | ${#FEATURE#Actor_CSPA_CETA.ActorId} | ${T}        | #{ADD_NODE}ACCR | ${T}               | #{ADD_NODE}CSPA | #{ADD_NODE}CETA | #{NO_ACTION}    |
+    And Verify the number of outgoing messages on outbound adapter "ASXML_OUT" recieved are "7"
+
+  #########################################################################################################################
+  #AC1: Generation of HIN valid check sum, added to the notification message
+  ###########################################################################################################################
+  Scenario Outline: AC1 - Create <Description>
+    When I generate a message from template for "acct001" using datatable and publish on adapter "ISO"
+      | BAH_From  | BAH_BizMsgIdr                               | MessageId                               | BAH_CreDt                            | SctiesAcct_OpngDt | Sup_AcctType   | Sup_Name   | Sup_AdrLine1              | Sup_PstCd              | Sup_TwnNm              | Sup_CtrySubDvsn              | Sup_Ctry              | Sup_Dsgnt              | Sup_ResInd              | Sup_ComMtdCd   |
+      | <ActorId> | <ActorId>${BAH_BizMsgIdr::format=\|Account} | <ActorId>${MessageId::format=\|Account} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}              | <Sup_AcctType> | <Sup_Name> | #{ADD_NODE}<Sup_AdrLine1> | #{ADD_NODE}<Sup_PstCd> | #{ADD_NODE}<Sup_TwnNm> | #{ADD_NODE}<Sup_CtrySubDvsn> | #{ADD_NODE}<Sup_Ctry> | #{ADD_NODE}<Sup_Dsgnt> | #{ADD_NODE}<Sup_ResInd> | <Sup_ComMtdCd> |
+    Then verify number of outgoing messages "1" on queue "ISO_OUT" for message type "acct002" with the following datatable and validate the schema of the outgoing message
+      | Validate_BAH | Validate_Rltd_BAH | BAH_To    | OriginalMsgId                               | Status |
+      | true         | true              | <ActorId> | <ActorId>${OriginalMsgId::format=\|Account} | COMP   |
+    And Verify the "Account" report in ODS for the following attributes from the below table
+      | ActorId   | AccountType    | ResidencyIndicator |
+      | <ActorId> | <Sup_AcctType> | <Sup_ResInd>       |
+
+    @REPORT_SPD-161_SPD-164_1
+    Examples: 
+      | Description                                                     | ActorId                             | Sup_AcctType | Sup_Name               | Sup_AdrLine1                     | Sup_PstCd | Sup_TwnNm     | Sup_CtrySubDvsn | Sup_Ctry | Sup_Dsgnt              | Sup_ResInd | Sup_ComMtdCd    |
+      | Direct account with domestic residency indicator                | ${#FEATURE#Actor_CDRA.ActorId}      | DRCT         | Richard, Hanna Richard | 3/240 CARRINGTON ROAD            |      2031 | COOGEE        | NSW             | AU       | SHERBINSK SUPER FUND   | DMST       | #{NO_ACTION}    |
+      | Direct account with foreign residency indicator                 | ${#FEATURE#Actor_CDRA_CSPA.ActorId} | DRCT         | Bayer Ltd              | 51368 Leverkusen                 |    700898 | Berlin        | Berlin          | DE       | BAYER SUPER FUND A/C   | FRGN       | #{NO_ACTION}    |
+      | Direct account with mixed residency indicator                   | ${#FEATURE#Actor_CDRA_CETA.ActorId} | DRCT         | BCG Group Ltd          | Level 6, 16 Marcus Clarke Street |      2601 | Canberra      | ACT             | AU       | BCG FUND               | MIXD       | #{NO_ACTION}    |
+      | Sponsored account with domestic residency indicator             | ${#FEATURE#Actor_CSPA.ActorId}      | SPSD         | Schneider Electric     | PO Box 5068                      |      4500 | Brendale      | QLD             | AU       | Schneider Electric A/C | DMST       | #{ADD_NODE}POST |
+      | Sponsored account with foreign residency indicator              | ${#FEATURE#Actor_CSPA_CETA.ActorId} | SPSD         | Woolworths Ltd         | Barkly-Square                    |      4500 | Brunswick     | VIC             | AU       | Woolies Store A/C      | FRGN       | #{ADD_NODE}POST |
+      | Sponsored account with mixed residency indicator                | ${#FEATURE#Actor_CDRA_CSPA.ActorId} | SPSD         | Target Ltd             | 33 West Vernon Avenue            |    107093 | West New York | NYK             | US       | Target Group           | MIXD       | #{ADD_NODE}POST |
+      | Settlement entrepot account with domestic residency indicator   | ${#FEATURE#Actor_ACCR.ActorId}      | SETT         | Ausgrid#{ADD_SPACE}    | 2 Invermay Road                  |      7250 | Launceston    | TAS             | AU       | Ausgrid Fund A/C       | DMST       | #{NO_ACTION}    |
+      | Settlement entrepot account with foreign residency indicator    | ${#FEATURE#Actor_CETA.ActorId}      | SETT         | Energy Australia       | 35 Stirling Highway              |      6009 | Perth         | WA              | AU       | Energy Australia A/C   | FRGN       | #{NO_ACTION}    |
+      | Accumulation entrepot account with domestic residency indicator | ${#FEATURE#Actor_CDRA_CETA.ActorId} | ACCU         | Ford Group Ltd         | P.O. Box 2000.                   |     48002 | Michigan      | Detroit         | US       | Ford Managed Fund A/C  | DMST       | #{NO_ACTION}    |
+      | Accumulation entrepot account with foreign residency indicator  | ${#FEATURE#Actor_CSPA_CETA.ActorId} | ACCU         | George & Lisa George   | GPO Box 1680.                    |      0801 | Darwin        | NT              | AU       | George AC              | FRGN       | #{NO_ACTION}    |
+
+  #Payload with optional fields - Designation, Address Line 2-5
+  Scenario Outline: AC1 - Create <Description>
+    When I generate a message from template for "acct001" using datatable and publish on adapter "ISO"
+      | BAH_From  | BAH_BizMsgIdr                               | MessageId                               | BAH_CreDt                            | SctiesAcct_OpngDt | Sup_AcctType   | Sup_Name   | Sup_AdrLine1              | Sup_AdrLine2   | Sup_AdrLine3   | Sup_AdrLine4   | Sup_AdrLine5   | Sup_PstCd              | Sup_TwnNm              | Sup_CtrySubDvsn              | Sup_Ctry              | Sup_ResInd              | Sup_ComMtdCd   |
+      | <ActorId> | <ActorId>${BAH_BizMsgIdr::format=\|Account} | <ActorId>${MessageId::format=\|Account} | ${T::DateFormatter=ZuluWithMilliSec} | ${T}              | <Sup_AcctType> | <Sup_Name> | #{ADD_NODE}<Sup_AdrLine1> | <Sup_AdrLine2> | <Sup_AdrLine3> | <Sup_AdrLine4> | <Sup_AdrLine5> | #{ADD_NODE}<Sup_PstCd> | #{ADD_NODE}<Sup_TwnNm> | #{ADD_NODE}<Sup_CtrySubDvsn> | #{ADD_NODE}<Sup_Ctry> | #{ADD_NODE}<Sup_ResInd> | <Sup_ComMtdCd> |
+    Then verify number of outgoing messages "1" on queue "ISO_OUT" for message type "acct002" with the following datatable and validate the schema of the outgoing message
+      | Validate_BAH | Validate_Rltd_BAH | BAH_To    | OriginalMsgId                               | Status |
+      | true         | true              | <ActorId> | <ActorId>${OriginalMsgId::format=\|Account} | COMP   |
+    And Verify the "Account" report in ODS for the following attributes from the below table
+      | ActorId   | AccountType    | ResidencyIndicator |
+      | <ActorId> | <Sup_AcctType> | <Sup_ResInd>       |
+
+    @REPORT_SPD-161_SPD-164_2
+    Examples: 
+      | Description                                                             | ActorId                        | Sup_AcctType | Sup_Name         | Sup_AdrLine1 | Sup_AdrLine2                 | Sup_AdrLine3          | Sup_AdrLine4          | Sup_AdrLine5      | Sup_PstCd | Sup_TwnNm | Sup_CtrySubDvsn | Sup_Ctry | Sup_ResInd | Sup_ComMtdCd    |
+      | Direct Account - mixed residency - Address Line 1-5                     | ${#FEATURE#Actor_CDRA.ActorId} | DRCT         | William Pty Ltd  |          240 | #{ADD_NODE}Gate2             | #{ADD_NODE}CARRINGTON | #{ADD_NODE}4th Avenue | #{ADD_NODE}COOGEE |      2031 | COOGEE    | NSW             | AU       | MIXD       | #{NO_ACTION}    |
+      | Sponsored Account - foreign residency - Address Line 1-4                | ${#FEATURE#Actor_CSPA.ActorId} | SPSD         | West Farmers     | Gate 5       | #{ADD_NODE}101 Currie Street | #{ADD_NODE}Burwood    | #{ADD_NODE}Adelaide   |                   |      5000 | Adelaide  | SA              | AU       | FRGN       | #{ADD_NODE}POST |
+      | Accumulation Account - domestic residency - Address Line 1-2            | ${#FEATURE#Actor_CETA.ActorId} | ACCU         | LJ Hooker        |           45 | #{ADD_NODE}   Pye Road       |                       |                       |                   |      7888 | Bendigo   | VIC             | AU       | DMST       | #{NO_ACTION}    |
+      | Settlement Account - foreign residency - Designation - Address Line 1-3 | ${#FEATURE#Actor_ACCR.ActorId} | SETT         | Elders Group Ltd |           16 | #{ADD_NODE}Sandilands Road   | #{ADD_NODE}Tampines   |                       |                   |    546080 | Singapore | SG              | SG       | FRGN       | #{NO_ACTION}    |
